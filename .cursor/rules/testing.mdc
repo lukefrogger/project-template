@@ -1,0 +1,10 @@
+---
+description: How to write tests
+globs: 
+alwaysApply: false
+---
+# Testing and Documentation
+    - Write tests only when asked to do so.
+    - Write unit tests for components using Jest and React Testing Library.
+    - Provide clear and concise comments for complex logic.
+    - Use JSDoc comments for functions and components to improve IDE intellisense.

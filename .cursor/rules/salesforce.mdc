@@ -1,0 +1,10 @@
+---
+description: Whenever Salesforce is referenced or required.
+globs: 
+alwaysApply: false
+---
+
+## Salesforce SOQL and queries
+
+- Use efficient SOQL queries
+- Use the information located in the `.salesforce-schema/objects` directory to help create queries

@@ -1,0 +1,73 @@
+name: PR Build
+
+on:
+  pull_request:
+    branches: [main, staging]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            ${{ github.workspace }}/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/pnpm-lock.yaml') }}-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Create image type declarations
+        run: |
+          echo "declare module '*.png' { const content: string; export default content; }" > image.d.ts
+          echo "declare module '*.jpg' { const content: string; export default content; }" >> image.d.ts
+          echo "declare module '*.jpeg' { const content: string; export default content; }" >> image.d.ts
+          echo "declare module '*.svg' { const content: string; export default content; }" >> image.d.ts
+          echo "declare module '*.gif' { const content: string; export default content; }" >> image.d.ts
+
+      - name: Type check
+        run: pnpm tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build project
+        run: pnpm build
+        env:
+          NEXT_PUBLIC_HOST_URL: fake-value
+          STRIPE_PRIVATE_KEY: fake-value
+          NEXT_PUBLIC_STRIPE_PUBLIC_KEY: fake-value
+          STRIPE_WEBHOOK_SECRET: fake-value
+          NEXT_PUBLIC_FB_API_KEY: fake-value
+          NEXT_PUBLIC_FB_AUTH_DOMAIN: fake-value
+          NEXT_PUBLIC_FB_PROJECT_ID: fake-value
+          NEXT_PUBLIC_FB_APP_ID: fake-value
+          NEXT_PRIVATE_FB_BASE64_WORKER: fake-value
+          NEXT_PUBLIC_ANNUAL_PRICE: fake-value
+          NEXT_PUBLIC_BI_ANNUAL_PRICE: fake-value
+          NEXT_PUBLIC_SPOT_INSURANCE_PRICE: fake-value
+          ENV_MODE: fake-value
+          MAILCHIMP_TRANS_EMAIL_KEY: fake-value
+          SALESFORCE_LOGIN_USER: fake-value
+          SALESFORCE_LOGIN_PASS: fake-value
+          SALESFORCE_LOGIN_URL: https://test.salesforce.com
